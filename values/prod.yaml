@@ -1,0 +1,7 @@
+replicaCount: 0
+
+image:
+  repository: nginx
+  tag: "1.21.1"
+  pullPolicy: IfNotPresent
+
