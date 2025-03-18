@@ -1,5 +1,5 @@
 replicaCount: 0
-
+name: stage
 image:
   repository: nginx
   tag: "1.21.0"
