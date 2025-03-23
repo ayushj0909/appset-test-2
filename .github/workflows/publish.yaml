@@ -63,6 +63,7 @@ jobs:
         uses: mathieudutour/github-tag-action@v6.2
         with:
           custom_tag: ${{ env.TAG }}
+          tag_prefix: ''
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create a GitHub release
