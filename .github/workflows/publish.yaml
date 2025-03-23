@@ -48,9 +48,13 @@ jobs:
       - name: Push chart to GHCR
         run: helm push dist/*.tgz oci://ghcr.io/${{ github.repository }}
 
+      - name: Export tag
+        run: echo "TAG=$(basename dist/*.tgz .tgz)" >> $GITHUB_ENV
+
       - name: Tag repo
         uses: mathieudutour/github-tag-action@v6.2
         with:
+          custom_tag: ${{ env.TAG }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create a GitHub release
