@@ -35,7 +35,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p dist
-          helm package "chart/*" -d dist
+          helm package chart/* -d dist
 
       - name: Login to GHCR
         uses: docker/login-action@v3
