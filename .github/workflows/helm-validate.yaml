@@ -29,5 +29,28 @@ jobs:
       - name: Process and generate summary
         if: always()
         run: |
-          cat kubeconform_output.txt | grep '^/workspace/rendered.yaml' | sed -E 's|/workspace/rendered.yaml - ([^[:space:]]+)[[:space:]]+([^[:space:]]+)(.*)|\1 <span style="color:green;">\2</span>\3|' >> $GITHUB_STEP_SUMMARY
-          cat kubeconform_output.txt | grep '^Summary:' | sed -E 's/(Valid: )([0-9]+)/\1<span style="color:green;">\2<\/span>/; s/(Invalid: )([0-9]+)/\1<span style="color:red;">\2<\/span>/; s/(Errors: )([0-9]+)/\1<span style="color:red;">\2<\/span>/; s/(Skipped: )([0-9]+)/\1<span style="color:white;">\2<\/span>/' >> $GITHUB_STEP_SUMMARY
+          echo "## Kubeconform Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Resource            | Status  | Details |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------------------|---------|---------|" >> $GITHUB_STEP_SUMMARY
+      
+          while IFS= read -r line; do
+            # We only care about lines matching /workspace/rendered.yaml
+            if [[ "$line" =~ ^/workspace/rendered.yaml ]]; then
+              # Example line: /workspace/rendered.yaml - ExternalSecret INVALID ...
+              resource=$(echo "$line" | awk '{print $4}')   # e.g. ExternalSecret
+              status=$(echo "$line" | awk '{print $5}')     # e.g. INVALID
+              details=$(echo "$line" | cut -d' ' -f6-)       # everything after the status
+              # Convert status to an emoji or just keep it
+              case "$status" in
+                VALID)   status="✅ VALID" ;;
+                INVALID) status="❌ INVALID" ;;
+                ERROR)   status="⚠️ ERROR" ;;
+              esac
+              echo "| $resource | $status | $details |" >> $GITHUB_STEP_SUMMARY
+            fi
+          done < kubeconform_output.txt
+      
+          # Finally, append the summary line
+          echo "" >> $GITHUB_STEP_SUMMARY
+          grep '^Summary:' kubeconform_output.txt >> $GITHUB_STEP_SUMMARY
