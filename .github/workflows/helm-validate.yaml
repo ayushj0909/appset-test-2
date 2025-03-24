@@ -26,7 +26,7 @@ jobs:
         id: validate
         run: |
           output=$(docker run --rm -v "$(pwd):/workspace" ghcr.io/yannh/kubeconform:latest -verbose -summary -output text /workspace/rendered.yaml || true)
-          echo "OUTPUT=$output" >> GITHUB_ENV
+          echo "OUTPUT=$output" >> $GITHUB_ENV
           echo ${{env.OUTPUT}}
 
       - name: Process and generate summary
