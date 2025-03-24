@@ -25,6 +25,4 @@ jobs:
       - name: Validate rendered manifests with kubeconform
         id: validate
         run: |
-          output=$(docker run --rm -v "${{ github.workspace }}:/workspace" ghcr.io/yannh/kubeconform:latest -summary -verbose -output pretty /workspace/rendered.yaml)
-          echo "$output"
-          echo "$output" >> $GITHUB_STEP_SUMMARY
+          GITHUB_STEP_SUMMARY=$(docker run --rm -v "${{ github.workspace }}:/workspace" ghcr.io/yannh/kubeconform:latest -summary -verbose -output pretty /workspace/rendered.yaml)
