@@ -25,19 +25,19 @@ jobs:
       - name: Validate rendered manifests with kubeconform
         id: validate
         run: |
-          output=$(docker run --rm -v "${{ github.workspace }}:/workspace" ghcr.io/yannh/kubeconform:latest -verbose -summary -output text /workspace/rendered.yaml)
+          output=$(docker run --rm -v "$(pwd):/workspace" ghcr.io/yannh/kubeconform:latest -verbose -summary -output text /workspace/rendered.yaml)
           echo "OUTPUT=$output" >> GITHUB_ENV
 
       - name: Process and generate summary
         run: |
           # Filter resource lines (skip summary line) and remove file prefix, then color the resource name green
-          processed_resources=$(echo "$OUTPUT" | grep '^/workspace/rendered.yaml' | sed -E 's|/workspace/rendered.yaml - ([^[:space:]]+)[[:space:]]+([^[:space:]]+)(.*)|\1 <span style="color:green;">\2</span>\3|')
+          resources=$(echo "$OUTPUT" | grep '^/workspace/rendered.yaml' | sed -E 's|/workspace/rendered.yaml - ([^[:space:]]+)[[:space:]]+([^[:space:]]+)(.*)|\1 <span style="color:green;">\2</span>\3|')
           
           # Process the final summary line: color Valid as green, Invalid and Errors as red, and Skipped as white
-          processed_summary=$(echo "$OUTPUT" | grep '^Summary:' | sed -E 's/(Valid: )([0-9]+)/\1<span style="color:green;">\2<\/span>/; s/(Invalid: )([0-9]+)/\1<span style="color:red;">\2<\/span>/; s/(Errors: )([0-9]+)/\1<span style="color:red;">\2<\/span>/; s/(Skipped: )([0-9]+)/\1<span style="color:white;">\2<\/span>/')
+          summary=$(echo "$OUTPUT" | grep '^Summary:' | sed -E 's/(Valid: )([0-9]+)/\1<span style="color:green;">\2<\/span>/; s/(Invalid: )([0-9]+)/\1<span style="color:red;">\2<\/span>/; s/(Errors: )([0-9]+)/\1<span style="color:red;">\2<\/span>/; s/(Skipped: )([0-9]+)/\1<span style="color:white;">\2<\/span>/')
           
           # Append the processed lines to the GitHub Step Summary file
           {
-            echo "$processed_resources"
-            echo "$processed_summary"
+            echo "$resources"
+            echo "$summary"
           } >> $GITHUB_STEP_SUMMARY
