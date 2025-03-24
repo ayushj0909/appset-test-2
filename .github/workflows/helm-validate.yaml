@@ -20,12 +20,12 @@ jobs:
           version: v3.16.1
 
       - name: Render Helm Chart
-        run: helm template workload ./chart/workload --skip-schema-validation > rendered.yaml
+        run: helm template workload ./chart/workload -f values/common.yaml -f values/analyst/prod.values.yaml --skip-schema-validation > rendered.yaml
 
       - name: Validate rendered manifests with kubeconform
         id: validate
         run: |
-          output=$(docker run --rm -v "${{ github.workspace }}:/workspace" ghcr.io/yannh/kubeconform:latest -summary -output text /workspace/rendered.yaml)
+          output=$(docker run --rm -v "${{ github.workspace }}:/workspace" ghcr.io/yannh/kubeconform:latest -verbose -summary -output text /workspace/rendered.yaml)
           echo "OUTPUT=$output" >> GITHUB_ENV
 
       - name: Process and generate summary
