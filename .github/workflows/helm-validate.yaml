@@ -23,7 +23,11 @@ jobs:
         run: helm template workload ./chart/workload --skip-schema-validation > rendered.yaml
 
       - name: Validate rendered manifests with kubeconform
+        id: validate
         uses: docker://ghcr.io/yannh/kubeconform:latest
         with:
           entrypoint: '/kubeconform'
-          args: "-summary -output pretty /github/workspace/rendered.yaml >> $GITHUB_STEP_SUMMARY"
+          args: "-summary -output pretty /github/workspace/rendered.yaml > result.txt"
+
+      - name: Generate summary
+        run: cat result.txt >> $GITHUB_STEP_SUMMARY
