@@ -28,9 +28,16 @@ jobs:
           output=$(docker run --rm -v "${{ github.workspace }}:/workspace" ghcr.io/yannh/kubeconform:latest -summary -output text /workspace/rendered.yaml)
           echo "$output"
           echo "$output" >> $GITHUB_STEP_SUMMARY
+          # Set the step output so it can be used in later steps
+          echo "output<<EOF" >> $GITHUB_OUTPUT
+          echo "$output" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Process and generate summary
         run: |
+          # Get the output from the previous step
+          output="${{ steps.validate.outputs.output }}"
+          
           # Process resource lines:
           # - Select lines starting with '/workspace/rendered.yaml'
           # - Remove the file prefix and color the resource name (the second word) in green.
