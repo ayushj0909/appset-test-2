@@ -25,4 +25,7 @@ jobs:
       - name: Validate rendered manifests with kubeconform
         id: validate
         run: |
-          GITHUB_STEP_SUMMARY=$(docker run --rm -v "${{ github.workspace }}:/workspace" ghcr.io/yannh/kubeconform:latest -summary -verbose -output pretty /workspace/rendered.yaml)
+          pipx install ansi2html
+          output=$(docker run --rm -v "${{ github.workspace }}:/workspace" ghcr.io/yannh/kubeconform:latest -summary -verbose -output pretty /workspace/rendered.yaml)
+          formatted_output=$(echo "$output" | ansi2html)
+          echo "$formatted_output" >> $GITHUB_STEP_SUMMARY
