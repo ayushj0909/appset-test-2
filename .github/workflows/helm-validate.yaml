@@ -5,6 +5,7 @@ on:
     paths:
       - 'charts/**'
   workflow_dispatch:
+  push:
 
 
 jobs:
@@ -33,16 +34,17 @@ jobs:
           while IFS= read -r line; do
             if [[ "$line" =~ ^/workspace/rendered.yaml ]]; then
               clean_line="${line#/workspace/rendered.yaml - }"
+              resource=$(echo "$clean_line" | awk '{print $1}')
+              rest=$(echo "$clean_line" | cut -d' ' -f2-)
               if [[ "$clean_line" == *"failed"* ]]; then
-                echo "❌ $clean_line" >> $GITHUB_STEP_SUMMARY
+                echo "❌ **$resource** $rest" >> $GITHUB_STEP_SUMMARY
               elif [[ "$clean_line" == *"error"* ]]; then
-                echo "⚠️ $clean_line" >> $GITHUB_STEP_SUMMARY
+                echo "⚠️ **$resource** $rest" >> $GITHUB_STEP_SUMMARY
               elif [[ "$clean_line" == *"valid"* ]]; then
-                echo "✅ $clean_line" >> $GITHUB_STEP_SUMMARY
+                echo "✅ **$resource** $rest" >> $GITHUB_STEP_SUMMARY
               else
-                echo "$clean_line" >> $GITHUB_STEP_SUMMARY
+                echo "**$resource** $rest" >> $GITHUB_STEP_SUMMARY
               fi
             fi
           done < kubeconform_output.txt
-          echo "" >> $GITHUB_STEP_SUMMARY
-          grep '^Summary:' kubeconform_output.txt >> $GITHUB_STEP_SUMMARY
+          echo "" >> $
