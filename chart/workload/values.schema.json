@@ -1,0 +1,1976 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["image", "port"],
+  "properties": {
+    "global": {
+      "type": "object",
+      "properties": {
+        "annotations": { "type": "object" },
+        "labels": { "type": "object" },
+        "description": { "type": "string" },
+        "fullnameOverride": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "affinity": {
+      "type": "object",
+      "properties": {
+        "nodeAffinity": {
+          "type": "object",
+          "properties": {
+            "requiredDuringSchedulingIgnoredDuringExecution": {
+              "type": "object",
+              "properties": {
+                "nodeSelectorTerms": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "matchExpressions": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "key": { "type": "string" },
+                            "operator": {
+                              "type": "string",
+                              "enum": ["In", "NotIn", "Exists", "DoesNotExist", "Gt", "Lt"]
+                            },
+                            "values": {
+                              "type": "array",
+                              "items": { "type": "string" }
+                            }
+                          },
+                          "required": ["key", "operator"],
+                          "allOf": [
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["In", "NotIn"] } }
+                              },
+                              "then": {
+                                "properties": {
+                                  "values": { "minItems": 1 }
+                                },
+                                "required": ["values"]
+                              }
+                            },
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["Exists", "DoesNotExist"] } }
+                              },
+                              "then": {
+                                "not": { "required": ["values"] }
+                              }
+                            },
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["Gt", "Lt"] } }
+                              },
+                              "then": {
+                                "properties": {
+                                  "values": { "minItems": 1, "maxItems": 1 }
+                                },
+                                "required": ["values"]
+                              }
+                            }
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "matchFields": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "key": { "type": "string" },
+                            "operator": {
+                              "type": "string",
+                              "enum": ["In", "NotIn", "Exists", "DoesNotExist", "Gt", "Lt"]
+                            },
+                            "values": {
+                              "type": "array",
+                              "items": { "type": "string" }
+                            }
+                          },
+                          "required": ["key", "operator"],
+                          "allOf": [
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["In", "NotIn"] } }
+                              },
+                              "then": {
+                                "properties": {
+                                  "values": { "minItems": 1 }
+                                },
+                                "required": ["values"]
+                              }
+                            },
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["Exists", "DoesNotExist"] } }
+                              },
+                              "then": {
+                                "not": { "required": ["values"] }
+                              }
+                            },
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["Gt", "Lt"] } }
+                              },
+                              "then": {
+                                "properties": {
+                                  "values": { "minItems": 1, "maxItems": 1 }
+                                },
+                                "required": ["values"]
+                              }
+                            }
+                          ],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": ["nodeSelectorTerms"],
+              "additionalProperties": false
+            },
+            "preferredDuringSchedulingIgnoredDuringExecution": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "weight": { "type": "integer", "minimum": 1, "maximum": 100 },
+                  "preference": {
+                    "type": "object",
+                    "properties": {
+                      "matchExpressions": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "key": { "type": "string" },
+                            "operator": {
+                              "type": "string",
+                              "enum": ["In", "NotIn", "Exists", "DoesNotExist", "Gt", "Lt"]
+                            },
+                            "values": {
+                              "type": "array",
+                              "items": { "type": "string" }
+                            }
+                          },
+                          "required": ["key", "operator"],
+                          "allOf": [
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["In", "NotIn"] } }
+                              },
+                              "then": {
+                                "properties": {
+                                  "values": { "minItems": 1 }
+                                },
+                                "required": ["values"]
+                              }
+                            },
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["Exists", "DoesNotExist"] } }
+                              },
+                              "then": {
+                                "not": { "required": ["values"] }
+                              }
+                            },
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["Gt", "Lt"] } }
+                              },
+                              "then": {
+                                "properties": {
+                                  "values": { "minItems": 1, "maxItems": 1 }
+                                },
+                                "required": ["values"]
+                              }
+                            }
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "matchFields": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "key": { "type": "string" },
+                            "operator": {
+                              "type": "string",
+                              "enum": ["In", "NotIn", "Exists", "DoesNotExist", "Gt", "Lt"]
+                            },
+                            "values": {
+                              "type": "array",
+                              "items": { "type": "string" }
+                            }
+                          },
+                          "required": ["key", "operator"],
+                          "allOf": [
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["In", "NotIn"] } }
+                              },
+                              "then": {
+                                "properties": {
+                                  "values": { "minItems": 1 }
+                                },
+                                "required": ["values"]
+                              }
+                            },
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["Exists", "DoesNotExist"] } }
+                              },
+                              "then": {
+                                "not": { "required": ["values"] }
+                              }
+                            },
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["Gt", "Lt"] } }
+                              },
+                              "then": {
+                                "properties": {
+                                  "values": { "minItems": 1, "maxItems": 1 }
+                                },
+                                "required": ["values"]
+                              }
+                            }
+                          ],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["weight", "preference"],
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "podAffinity": {
+          "type": "object",
+          "properties": {
+            "requiredDuringSchedulingIgnoredDuringExecution": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "labelSelector": {
+                    "type": "object",
+                    "properties": {
+                      "matchExpressions": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "key": { "type": "string" },
+                            "operator": {
+                              "type": "string",
+                              "enum": ["In", "NotIn", "Exists", "DoesNotExist", "Gt", "Lt"]
+                            },
+                            "values": {
+                              "type": "array",
+                              "items": { "type": "string" }
+                            }
+                          },
+                          "required": ["key", "operator"],
+                          "allOf": [
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["In", "NotIn"] } }
+                              },
+                              "then": {
+                                "properties": {
+                                  "values": { "minItems": 1 }
+                                },
+                                "required": ["values"]
+                              }
+                            },
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["Exists", "DoesNotExist"] } }
+                              },
+                              "then": {
+                                "not": { "required": ["values"] }
+                              }
+                            },
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["Gt", "Lt"] } }
+                              },
+                              "then": {
+                                "properties": {
+                                  "values": { "minItems": 1, "maxItems": 1 }
+                                },
+                                "required": ["values"]
+                              }
+                            }
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "matchLabels": {
+                        "type": "object",
+                        "additionalProperties": { "type": "string" }
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "namespaceSelector": {
+                    "type": "object",
+                    "properties": {
+                      "matchExpressions": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "key": { "type": "string" },
+                            "operator": {
+                              "type": "string",
+                              "enum": ["In", "NotIn", "Exists", "DoesNotExist", "Gt", "Lt"]
+                            },
+                            "values": {
+                              "type": "array",
+                              "items": { "type": "string" }
+                            }
+                          },
+                          "required": ["key", "operator"],
+                          "allOf": [
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["In", "NotIn"] } }
+                              },
+                              "then": {
+                                "properties": {
+                                  "values": { "minItems": 1 }
+                                },
+                                "required": ["values"]
+                              }
+                            },
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["Exists", "DoesNotExist"] } }
+                              },
+                              "then": {
+                                "not": { "required": ["values"] }
+                              }
+                            },
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["Gt", "Lt"] } }
+                              },
+                              "then": {
+                                "properties": {
+                                  "values": { "minItems": 1, "maxItems": 1 }
+                                },
+                                "required": ["values"]
+                              }
+                            }
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "matchLabels": {
+                        "type": "object",
+                        "additionalProperties": { "type": "string" }
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "namespaces": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  },
+                  "topologyKey": { "type": "string" }
+                },
+                "required": ["topologyKey"],
+                "additionalProperties": false
+              }
+            },
+            "preferredDuringSchedulingIgnoredDuringExecution": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "weight": { "type": "integer", "minimum": 1, "maximum": 100 },
+                  "podAffinityTerm": {
+                    "type": "object",
+                    "properties": {
+                      "labelSelector": {
+                        "type": "object",
+                        "properties": {
+                          "matchExpressions": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "key": { "type": "string" },
+                                "operator": {
+                                  "type": "string",
+                                  "enum": ["In", "NotIn", "Exists", "DoesNotExist", "Gt", "Lt"]
+                                },
+                                "values": {
+                                  "type": "array",
+                                  "items": { "type": "string" }
+                                }
+                              },
+                              "required": ["key", "operator"],
+                              "allOf": [
+                                {
+                                  "if": {
+                                    "properties": { "operator": { "enum": ["In", "NotIn"] } }
+                                  },
+                                  "then": {
+                                    "properties": {
+                                      "values": { "minItems": 1 }
+                                    },
+                                    "required": ["values"]
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "properties": { "operator": { "enum": ["Exists", "DoesNotExist"] } }
+                                  },
+                                  "then": {
+                                    "not": { "required": ["values"] }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "properties": { "operator": { "enum": ["Gt", "Lt"] } }
+                                  },
+                                  "then": {
+                                    "properties": {
+                                      "values": { "minItems": 1, "maxItems": 1 }
+                                    },
+                                    "required": ["values"]
+                                  }
+                                }
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "matchLabels": {
+                            "type": "object",
+                            "additionalProperties": { "type": "string" }
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "namespaceSelector": {
+                        "type": "object",
+                        "properties": {
+                          "matchExpressions": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "key": { "type": "string" },
+                                "operator": {
+                                  "type": "string",
+                                  "enum": ["In", "NotIn", "Exists", "DoesNotExist", "Gt", "Lt"]
+                                },
+                                "values": {
+                                  "type": "array",
+                                  "items": { "type": "string" }
+                                }
+                              },
+                              "required": ["key", "operator"],
+                              "allOf": [
+                                {
+                                  "if": {
+                                    "properties": { "operator": { "enum": ["In", "NotIn"] } }
+                                  },
+                                  "then": {
+                                    "properties": {
+                                      "values": { "minItems": 1 }
+                                    },
+                                    "required": ["values"]
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "properties": { "operator": { "enum": ["Exists", "DoesNotExist"] } }
+                                  },
+                                  "then": {
+                                    "not": { "required": ["values"] }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "properties": { "operator": { "enum": ["Gt", "Lt"] } }
+                                  },
+                                  "then": {
+                                    "properties": {
+                                      "values": { "minItems": 1, "maxItems": 1 }
+                                    },
+                                    "required": ["values"]
+                                  }
+                                }
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "matchLabels": {
+                            "type": "object",
+                            "additionalProperties": { "type": "string" }
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "namespaces": {
+                        "type": "array",
+                        "items": { "type": "string" }
+                      },
+                      "topologyKey": { "type": "string" }
+                    },
+                    "required": ["topologyKey"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["weight", "podAffinityTerm"],
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "podAntiAffinity": {
+          "type": "object",
+          "properties": {
+            "requiredDuringSchedulingIgnoredDuringExecution": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "labelSelector": {
+                    "type": "object",
+                    "properties": {
+                      "matchExpressions": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "key": { "type": "string" },
+                            "operator": {
+                              "type": "string",
+                              "enum": ["In", "NotIn", "Exists", "DoesNotExist", "Gt", "Lt"]
+                            },
+                            "values": {
+                              "type": "array",
+                              "items": { "type": "string" }
+                            }
+                          },
+                          "required": ["key", "operator"],
+                          "allOf": [
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["In", "NotIn"] } }
+                              },
+                              "then": {
+                                "properties": {
+                                  "values": { "minItems": 1 }
+                                },
+                                "required": ["values"]
+                              }
+                            },
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["Exists", "DoesNotExist"] } }
+                              },
+                              "then": {
+                                "not": { "required": ["values"] }
+                              }
+                            },
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["Gt", "Lt"] } }
+                              },
+                              "then": {
+                                "properties": {
+                                  "values": { "minItems": 1, "maxItems": 1 }
+                                },
+                                "required": ["values"]
+                              }
+                            }
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "matchLabels": {
+                        "type": "object",
+                        "additionalProperties": { "type": "string" }
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "namespaceSelector": {
+                    "type": "object",
+                    "properties": {
+                      "matchExpressions": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "key": { "type": "string" },
+                            "operator": {
+                              "type": "string",
+                              "enum": ["In", "NotIn", "Exists", "DoesNotExist", "Gt", "Lt"]
+                            },
+                            "values": {
+                              "type": "array",
+                              "items": { "type": "string" }
+                            }
+                          },
+                          "required": ["key", "operator"],
+                          "allOf": [
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["In", "NotIn"] } }
+                              },
+                              "then": {
+                                "properties": {
+                                  "values": { "minItems": 1 }
+                                },
+                                "required": ["values"]
+                              }
+                            },
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["Exists", "DoesNotExist"] } }
+                              },
+                              "then": {
+                                "not": { "required": ["values"] }
+                              }
+                            },
+                            {
+                              "if": {
+                                "properties": { "operator": { "enum": ["Gt", "Lt"] } }
+                              },
+                              "then": {
+                                "properties": {
+                                  "values": { "minItems": 1, "maxItems": 1 }
+                                },
+                                "required": ["values"]
+                              }
+                            }
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "matchLabels": {
+                        "type": "object",
+                        "additionalProperties": { "type": "string" }
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "namespaces": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  },
+                  "topologyKey": { "type": "string" }
+                },
+                "required": ["topologyKey"],
+                "additionalProperties": false
+              }
+            },
+            "preferredDuringSchedulingIgnoredDuringExecution": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "weight": { "type": "integer", "minimum": 1, "maximum": 100 },
+                  "podAffinityTerm": {
+                    "type": "object",
+                    "properties": {
+                      "labelSelector": {
+                        "type": "object",
+                        "properties": {
+                          "matchExpressions": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "key": { "type": "string" },
+                                "operator": {
+                                  "type": "string",
+                                  "enum": ["In", "NotIn", "Exists", "DoesNotExist", "Gt", "Lt"]
+                                },
+                                "values": {
+                                  "type": "array",
+                                  "items": { "type": "string" }
+                                }
+                              },
+                              "required": ["key", "operator"],
+                              "allOf": [
+                                {
+                                  "if": {
+                                    "properties": { "operator": { "enum": ["In", "NotIn"] } }
+                                  },
+                                  "then": {
+                                    "properties": {
+                                      "values": { "minItems": 1 }
+                                    },
+                                    "required": ["values"]
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "properties": { "operator": { "enum": ["Exists", "DoesNotExist"] } }
+                                  },
+                                  "then": {
+                                    "not": { "required": ["values"] }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "properties": { "operator": { "enum": ["Gt", "Lt"] } }
+                                  },
+                                  "then": {
+                                    "properties": {
+                                      "values": { "minItems": 1, "maxItems": 1 }
+                                    },
+                                    "required": ["values"]
+                                  }
+                                }
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "matchLabels": {
+                            "type": "object",
+                            "additionalProperties": { "type": "string" }
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "namespaceSelector": {
+                        "type": "object",
+                        "properties": {
+                          "matchExpressions": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "key": { "type": "string" },
+                                "operator": {
+                                  "type": "string",
+                                  "enum": ["In", "NotIn", "Exists", "DoesNotExist", "Gt", "Lt"]
+                                },
+                                "values": {
+                                  "type": "array",
+                                  "items": { "type": "string" }
+                                }
+                              },
+                              "required": ["key", "operator"],
+                              "allOf": [
+                                {
+                                  "if": {
+                                    "properties": { "operator": { "enum": ["In", "NotIn"] } }
+                                  },
+                                  "then": {
+                                    "properties": {
+                                      "values": { "minItems": 1 }
+                                    },
+                                    "required": ["values"]
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "properties": { "operator": { "enum": ["Exists", "DoesNotExist"] } }
+                                  },
+                                  "then": {
+                                    "not": { "required": ["values"] }
+                                  }
+                                },
+                                {
+                                  "if": {
+                                    "properties": { "operator": { "enum": ["Gt", "Lt"] } }
+                                  },
+                                  "then": {
+                                    "properties": {
+                                      "values": { "minItems": 1, "maxItems": 1 }
+                                    },
+                                    "required": ["values"]
+                                  }
+                                }
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "matchLabels": {
+                            "type": "object",
+                            "additionalProperties": { "type": "string" }
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      "namespaces": {
+                        "type": "array",
+                        "items": { "type": "string" }
+                      },
+                      "topologyKey": { "type": "string" }
+                    },
+                    "required": ["topologyKey"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["weight", "podAffinityTerm"],
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+
+    },
+    "configMap": {
+      "type": "object",
+      "properties": {
+        "annotations": { "type": "object" },
+        "labels": { "type": "object" }
+      },
+      "additionalProperties": false
+    },
+    "container": {
+      "type": "object",
+      "description": "Configuration for the main container.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 0,
+          "description": "Main container name. Defaults to the fullname template value if empty."
+        },
+        "entrypoint": {
+          "type": "array",
+          "description": "Overrides for the container's entrypoint command. Each item represents a command argument.",
+          "items": {
+            "type": "string",
+            "description": "An individual entrypoint argument."
+          }
+        },
+        "args": {
+          "type": "array",
+          "description": "Command-line arguments for the container.",
+          "items": {
+            "type": "string",
+            "description": "An individual argument."
+          }
+        },
+        "extraPorts": {
+          "type": "array",
+          "description": "Additional ports to expose from the container.",
+          "items": {
+            "type": "object",
+            "description": "An object defining extra port configuration."
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "deployment": {
+      "type": "object",
+      "properties": {
+        "minReadySeconds": {
+          "anyOf": [
+            {"type": "string"},
+            {"type": "null"}
+          ]
+        },
+        "paused": {
+          "anyOf": [
+            {"type": "string"},
+            {"type": "null"}
+          ]
+        },
+        "progressDeadlineSeconds":{
+          "anyOf": [
+            {"type": "number"},
+            {"type": "null"}
+          ]
+        },
+        "revisionHistoryLimit": {
+          "anyOf": [
+            {"type": "number"},
+            {"type": "null"}
+          ]
+        },
+        "updateStrategy": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["RollingUpdate", "Recreate"]
+            },
+            "rollingUpdate": {
+              "type": "object",
+              "properties": {
+                "maxSurge": { "type": "string" },
+                "maxUnavailable": { "type": "string" }
+              },
+              "required": ["maxSurge", "maxUnavailable"],
+              "additionalProperties": true
+            }
+          },
+          "required": ["type"],
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "externalSecret": {
+      "type": "object",
+      "description": "External secret management integration. Provides configuration to fetch secrets from an external SecretStore.",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable external secret management."
+        },
+        "labels": {
+          "type": "object",
+          "description": "Optional labels for the external secret."
+        },
+        "annotations": {
+          "type": "object",
+          "description": "Optional annotations for the external secret."
+        },
+        "secretStore": {
+          "type": "object",
+          "description": "Configuration for the external SecretStore. This is required if external secret management is enabled."
+        },
+        "refreshInterval": {
+          "type": "string",
+          "description": "Interval for refreshing secrets (e.g., '30s', '5m')."
+        },
+        "creationPolicy": {
+          "type": "string",
+          "enum": ["Owner", "Orphan", "Merge", "None"],
+          "description": "Policy for associating the secret with its owner. Options: 'Owner', 'Orphan', 'Merge', or 'None'."
+        },
+        "deletionPolicy": {
+          "type": "string",
+          "enum": ["Retain", "Delete", "Merge"],
+          "description": "Policy for deleting the secret. Options: 'Retain', 'Delete', or 'Merge'."
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of the secret (e.g., 'Opaque', 'kubernetes.io/tls')."
+        },
+        "data": {
+          "type": "object",
+          "description": "Mapping of secret keys to remote references for fetching secret data. Each property name becomes the secret key and its value defines the remote reference.",
+          "additionalProperties": {
+            "type": "object",
+            "description": "Definition of a remote reference for a secret key.",
+            "properties": {
+              "key": {
+                "type": "string",
+                "description": "The key in the external secret store."
+              },
+              "property": {
+                "type": "string",
+                "description": "Optional property to extract from the remote secret."
+              }
+            },
+            "required": ["key"],
+            "additionalProperties": false
+          }
+        },
+        "dataFrom": {
+          "type": "array",
+          "description": "Direct import of key-value pairs from the remote secret's structure. The entire remote secret is used to extract multiple key: value pairs.",
+          "items": {
+            "type": "object",
+            "description": "A key reference definition.",
+            "properties": {
+              "key": {
+                "type": "string",
+                "description": "The external key name to be used for extraction."
+              },
+              "property": {
+                "type": "string",
+                "description": "The (optional) specific property to extract from the remote secret to use as the secret's value."
+              }
+            },
+            "required": ["key"],
+            "additionalProperties": false
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["enabled"],
+      "if": {
+        "properties": {
+          "enabled": { "const": true }
+        }
+      },
+      "then": {
+        "required": [
+          "secretStore",
+          "refreshInterval",
+          "creationPolicy",
+          "deletionPolicy",
+          "type"
+        ],
+        "anyOf": [
+          {
+            "properties": {
+              "data": {
+                "minProperties": 1,
+                "description": "At least one data mapping is required when external secret management is enabled."
+              }
+            }
+          },
+          {
+            "properties": {
+              "dataFrom": {
+                "minProperties": 1,
+                "description": "At least one dataFrom mapping is required when external secret management is enabled."
+              }
+            }
+          }
+        ],
+        "properties": {
+          "secretStore": {
+            "type": "object",
+            "description": "Configuration for the external SecretStore. Required when external secret management is enabled.",
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Name of the external SecretStore (e.g., 'my-secret-store')."
+              },
+              "kind": {
+                "type": "string",
+                "enum": ["SecretStore", "ClusterSecretStore"],
+                "description": "Kind of the external SecretStore. Must be either 'SecretStore' or 'ClusterSecretStore'."
+              }
+            },
+            "required": ["name", "kind"],
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    "extraConfigMaps": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "extraContainers": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "extraManifests": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "extraVolumes": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "extraVolumeMounts": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "env": {
+      "type": "object"
+    },
+    "envOverride": {
+      "type": "object"
+    },
+    "image": {
+      "type": "object",
+      "properties": {
+        "pullPolicy": {
+          "type": "string",
+          "enum": ["Always", "IfNotPresent", "Never"]
+        },
+        "registry": { "type": "string", "minLength": 1 },
+        "repository": { "type": "string", "minLength": 1 },
+        "tag": { "type": "string", "minLength": 1 }
+      },
+      "required": ["registry", "repository", "tag"],
+      "additionalProperties": true
+    },
+    "initContainers": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "ingress": {
+      "type": "object",
+      "properties": {
+        "domain": { "type": "string", "minLength": 0 },
+        "external": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "gateways": {
+              "type": "array",
+              "items": { "type": "string" },
+              "minItems": 1
+            },
+            "extraHosts": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "required": ["enabled"],
+          "additionalProperties": true
+        },
+        "internal": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "gateways": {
+              "type": "array",
+              "items": { "type": "string" },
+              "minItems": 1
+            },
+            "extraHosts": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "required": ["enabled"],
+          "additionalProperties": true
+        }
+      },
+      "required": ["domain", "external", "internal"],
+      "additionalProperties": true
+    },
+    "hpa": {
+      "description": "Horizontal Pod Autoscaler (HPA) configuration for scaling your application based on metrics. When enabled, you must specify minReplicas, maxReplicas, metrics, and behavior.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Toggle to enable the Horizontal Pod Autoscaler. If true, the HPA configuration is active."
+        },
+        "annotations": {
+          "type": "object",
+          "description": "Annotations to add to the HPA resource. These are key/value pairs."
+        },
+        "labels": {
+          "type": "object",
+          "description": "Labels to add to the HPA resource. These are key/value pairs."
+        },
+        "minReplicas": {
+          "type": "number",
+          "description": "Minimum number of replicas for the target application. Should be less than or equal to maxReplicas."
+        },
+        "maxReplicas": {
+          "type": "number",
+          "description": "Maximum number of replicas for the target application. Must be greater than or equal to minReplicas."
+        },
+        "metrics": {
+          "type": "array",
+          "description": "A list of metric definitions used for scaling decisions. For example, resource metrics such as CPU or memory.",
+          "items": {
+            "type": "object",
+            "description": "A single metric definition.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "description": "The type of metric.",
+                "enum": ["Resource", "External", "Pods", "Object"]
+              },
+              "resource": {
+                "type": "object",
+                "description": "Details for a resource metric. Required if type is 'Resource'.",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the resource (e.g., 'cpu', 'memory')."
+                  },
+                  "target": {
+                    "type": "object",
+                    "description": "Target specification for the resource metric.",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "description": "Type of target value.",
+                        "enum": ["Utilization", "Value", "AverageValue"]
+                      },
+                      "value": {
+                        "type": "number",
+                        "description": "The target value for the metric."
+                      },
+                      "averageUtilization": {
+                        "type": "number",
+                        "description": "Target average utilization percentage."
+                      }
+                    },
+                    "additionalProperties": false,
+                    "oneOf": [
+                      { "required": ["type"] }
+                    ]
+                  }
+                },
+                "required": ["name", "target"],
+                "additionalProperties": false
+              }
+            },
+            "required": ["type"],
+            "additionalProperties": true
+          }
+        },
+        "behavior": {
+          "description": "Scaling behavior configuration for the HPA, which defines how scaling decisions are applied for scaling up and down.",
+          "type": "object",
+          "properties": {
+            "scaleUp": {
+              "type": "object",
+              "description": "Configuration for scaling up the application.",
+              "properties": {
+                "stabilizationWindowSeconds": {
+                  "type": "number",
+                  "description": "Time period (in seconds) during which past recommendations are considered to prevent rapid fluctuations in scale up."
+                },
+                "selectPolicy": {
+                  "type": "string",
+                  "description": "Policy for selecting the scale up behavior.",
+                  "enum": ["Max", "Min", "Disabled"]
+                },
+                "policies": {
+                  "type": "array",
+                  "description": "List of policies that determine how quickly to scale up.",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "description": "Policy type.",
+                        "enum": ["Pods", "Percent"]
+                      },
+                      "value": {
+                        "type": "number",
+                        "description": "The value associated with the policy."
+                      },
+                      "periodSeconds": {
+                        "type": "number",
+                        "description": "Duration in seconds for which the policy is in effect."
+                      }
+                    },
+                    "required": ["type", "value", "periodSeconds"],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": ["policies"],
+              "additionalProperties": false
+            },
+            "scaleDown": {
+              "type": "object",
+              "description": "Configuration for scaling down the application.",
+              "properties": {
+                "stabilizationWindowSeconds": {
+                  "type": "number",
+                  "description": "Time period (in seconds) during which past recommendations are considered to prevent rapid fluctuations in scale down."
+                },
+                "selectPolicy": {
+                  "type": "string",
+                  "description": "Policy for selecting the scale down behavior.",
+                  "enum": ["Max", "Min", "Disabled"]
+                },
+                "policies": {
+                  "type": "array",
+                  "description": "List of policies that determine how quickly to scale down.",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "description": "Policy type.",
+                        "enum": ["Pods", "Percent"]
+                      },
+                      "value": {
+                        "type": "number",
+                        "description": "The value associated with the policy."
+                      },
+                      "periodSeconds": {
+                        "type": "number",
+                        "description": "Duration in seconds for which the policy is in effect."
+                      }
+                    },
+                    "required": ["type", "value", "periodSeconds"],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": ["policies"],
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": ["enabled"],
+      "if": {
+        "properties": {
+          "enabled": { "const": true }
+        }
+      },
+      "then": {
+        "required": ["maxReplicas", "metrics", "behavior"]
+      },
+      "additionalProperties": true
+    },
+    "nodeSelector": {
+      "type": "object"
+    },
+    "persistence": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "name": { "type": "string", "minLength": 0 },
+        "labels": { "type": "object" },
+        "annotations": { "type": "object" },
+        "accessMode": {
+          "type": "string",
+          "enum": ["ReadWriteOnce", "ReadOnlyMany", "ReadWriteMany"]
+        },
+        "mountPVC": { "type": "boolean" },
+        "mountPath": { "type": "string", "minLength": 1 },
+        "storageClass": {
+          "anyOf": [
+            { "type": "string" },
+            { "type": "null" }
+          ]
+        },
+        "storageSize": { "type": "string", "minLength": 1 },
+        "volumeName": { "type": "string" },
+        "volumeMode": { "type": "string" },
+        "existingClaim": { "type": "string" }
+      },
+      "required": [
+        "enabled",
+        "name",
+        "accessMode",
+        "mountPVC",
+        "mountPath",
+        "storageClass",
+        "storageSize"
+      ],
+      "if": {
+        "properties": {
+          "mountPVC": { "const": true }
+        }
+      },
+      "then": {
+        "required": [ "mountPath" ]
+      },
+      "additionalProperties": true
+    },
+    "podAnnotations": {
+      "description": "Additional annotations for the pod.",
+      "type": "object"
+    },
+    "podDisruptionBudget": {
+      "description": "Configures the Pod Disruption Budget, which defines the minimum number or percentage of replicas that must remain available during planned disruptions. When enabled, at least one of maxUnavailable or minAvailable must be specified.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enables or disables the Pod Disruption Budget. When true, a disruption budget will be applied."
+        },
+        "maxUnavailable": {
+          "type": "string",
+          "description": "Specifies the maximum number or percentage of pods that can be unavailable during a disruption. Use this to limit the number of pods that may be disrupted."
+        },
+        "minAvailable": {
+          "type": "string",
+          "description": "Specifies the minimum number or percentage of pods that must remain available during a disruption. Use this to ensure sufficient pod availability."
+        }
+      },
+      "required": [
+        "enabled"
+      ],
+      "if": {
+        "properties": {"enabled": {"const": true}}
+      },
+      "then": {
+        "anyOf": [
+          {"required": ["maxUnavailable"]},
+          {"required": ["minAvailable"]}
+        ]
+      },
+      "additionalProperties": true
+    },
+    "podLabels": {
+      "description": "Additional labels for the pod.",
+      "type": "object"
+    },
+    "port": {
+      "description": "Main container's primary port.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 65535
+    },
+    "probes": {
+      "description": "Defines probe configurations for liveness, readiness, and startup probes following the Kubernetes Probe specification. For liveness and startup probes, successThreshold must be 1. Includes defaults and validations per Kubernetes documentation.",
+      "type": "object",
+      "properties": {
+        "livenessProbe": {
+          "description": "Liveness probe configuration. Checks if the container is alive. Failure triggers a container restart. successThreshold must be set to 1.",
+          "allOf": [
+            {
+              "type": "object",
+              "properties": {
+                "exec": {
+                  "description": "Exec probe configuration. Executes a command inside the container; success is indicated by a 0 exit code.",
+                  "type": "object",
+                  "properties": {
+                    "command": {
+                      "description": "An array of strings representing the command to be executed in the container.",
+                      "type": "array",
+                      "items": { "type": "string" }
+                    }
+                  },
+                  "required": ["command"]
+                },
+                "httpGet": {
+                  "description": "HTTP GET probe configuration. Sends an HTTP request and expects a successful (typically 200 OK) response.",
+                  "type": "object",
+                  "properties": {
+                    "path": { "description": "The HTTP path to access on the container.", "type": "string" },
+                    "port": { "description": "The port to access on the container; can be a number or a named port.", "oneOf": [{ "type": "integer" }, { "type": "string" }] },
+                    "scheme": { "description": "The scheme used for the HTTP request; defaults to HTTP if not specified.", "type": "string", "enum": ["HTTP", "HTTPS"] }
+                  },
+                  "required": ["path", "port"]
+                },
+                "tcpSocket": {
+                  "description": "TCP socket probe configuration. Attempts to establish a TCP connection on the specified port.",
+                  "type": "object",
+                  "properties": {
+                    "port": { "description": "The port number or name for the TCP check.", "oneOf": [{ "type": "integer" }, { "type": "string" }] }
+                  },
+                  "required": ["port"]
+                },
+                "grpc": {
+                  "description": "gRPC probe configuration. Sends a gRPC request; success is based on a positive response.",
+                  "type": "object",
+                  "properties": {
+                    "port": { "description": "The port to access on the container.", "type": "number", "minimum": 1 },
+                    "service": { "description": "The gRPC service name to check.", "type": "string" }
+                  },
+                  "required": ["port"]
+                },
+                "initialDelaySeconds": {
+                  "description": "Number of seconds after the container has started before probes are initiated. If the value of periodSeconds is greater than initialDelaySeconds then the initialDelaySeconds will be ignored. Defaults to 0 seconds. Minimum value is 0.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "timeoutSeconds": {
+                  "description": "Seconds after which the probe times out. Defaults to 1.",
+                  "type": "number",
+                  "minimum": 1
+                },
+                "periodSeconds": {
+                  "description": "Frequency (in seconds) at which the probe is performed. Defaults to 10.",
+                  "type": "number",
+                  "minimum": 1
+                },
+                "failureThreshold": {
+                  "description": "Number of consecutive failures required for the probe to be considered failed. Defaults to 3.",
+                  "type": "number",
+                  "minimum": 1
+                },
+                "terminationGracePeriodSeconds": {
+                  "description": "Grace period (in seconds) before forcefully terminating a failed container. Defaults to 30.",
+                  "type": "number",
+                  "minimum": 1
+                }
+              },
+              "oneOf": [
+                { "required": ["exec"] },
+                { "required": ["httpGet"] },
+                { "required": ["tcpSocket"] },
+                { "required": ["grpc"] }
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "readinessProbe": {
+          "description": "Readiness probe configuration. Checks if the container is ready to serve traffic. Failure marks the container as not ready. successThreshold (default 1) defines the minimum consecutive successes required after a failure.",
+          "allOf": [
+            {
+              "type": "object",
+              "properties": {
+                "exec": {
+                  "description": "Exec probe configuration.",
+                  "type": "object",
+                  "properties": {
+                    "command": {
+                      "description": "An array of strings representing the command.",
+                      "type": "array",
+                      "items": { "type": "string" }
+                    }
+                  },
+                  "required": ["command"]
+                },
+                "httpGet": {
+                  "description": "HTTP GET probe configuration.",
+                  "type": "object",
+                  "properties": {
+                    "path": { "description": "The HTTP path.", "type": "string" },
+                    "port": { "description": "The port; can be a number or a named port.", "oneOf": [{ "type": "integer" }, { "type": "string" }] },
+                    "scheme": { "description": "The HTTP scheme; defaults to HTTP.", "type": "string", "enum": ["HTTP", "HTTPS"] }
+                  },
+                  "required": ["path", "port"]
+                },
+                "tcpSocket": {
+                  "description": "TCP socket probe configuration.",
+                  "type": "object",
+                  "properties": {
+                    "port": { "description": "The TCP check port.", "oneOf": [{ "type": "integer" }, { "type": "string" }] }
+                  },
+                  "required": ["port"]
+                },
+                "grpc": {
+                  "description": "gRPC probe configuration.",
+                  "type": "object",
+                  "properties": {
+                    "port": { "description": "The port to access.", "type": "number", "minimum": 1 },
+                    "service": { "description": "The gRPC service name.", "type": "string" }
+                  },
+                  "required": ["port"]
+                },
+                "initialDelaySeconds": {
+                  "description": "Seconds after start before the probe is initiated. Defaults to 0.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "timeoutSeconds": {
+                  "description": "Number of seconds after which the probe times out. Defaults to 1 second if not defined. Minimum value is 1.",
+                  "type": "number",
+                  "minimum": 1
+                },
+                "periodSeconds": {
+                  "description": "How often (in seconds) to perform the probe. Default to 10 seconds. The minimum value is 1.",
+                  "type": "number",
+                  "minimum": 1
+                },
+                "failureThreshold": {
+                  "description": "Consecutive failures before considering the probe failed. Defaults to 3.",
+                  "type": "number",
+                  "minimum": 1
+                },
+                "terminationGracePeriodSeconds": {
+                  "description": "Grace period before forceful termination. Defaults to 30.",
+                  "type": "number",
+                  "minimum": 1
+                }
+              },
+              "oneOf": [
+                { "required": ["exec"] },
+                { "required": ["httpGet"] },
+                { "required": ["tcpSocket"] },
+                { "required": ["grpc"] }
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "startupProbe": {
+          "description": "Startup probe configuration. Checks if the container has started successfully. Allows extended startup times. successThreshold must be set to 1.",
+          "allOf": [
+            {
+              "type": "object",
+              "properties": {
+                "exec": {
+                  "description": "Exec probe configuration.",
+                  "type": "object",
+                  "properties": {
+                    "command": {
+                      "description": "An array of strings representing the command.",
+                      "type": "array",
+                      "items": { "type": "string" }
+                    }
+                  },
+                  "required": ["command"]
+                },
+                "httpGet": {
+                  "description": "HTTP GET probe configuration.",
+                  "type": "object",
+                  "properties": {
+                    "path": { "description": "The HTTP path.", "type": "string" },
+                    "port": { "description": "The port; can be a number or a named port.", "oneOf": [{ "type": "integer" }, { "type": "string" }] },
+                    "scheme": { "description": "The HTTP scheme; defaults to HTTP.", "type": "string", "enum": ["HTTP", "HTTPS"] }
+                  },
+                  "required": ["path", "port"]
+                },
+                "tcpSocket": {
+                  "description": "TCP socket probe configuration.",
+                  "type": "object",
+                  "properties": {
+                    "port": { "description": "The TCP check port.", "oneOf": [{ "type": "integer" }, { "type": "string" }] }
+                  },
+                  "required": ["port"]
+                },
+                "grpc": {
+                  "description": "gRPC probe configuration.",
+                  "type": "object",
+                  "properties": {
+                    "port": { "description": "The port to access.", "type": "number", "minimum": 1 },
+                    "service": { "description": "The gRPC service name.", "type": "string" }
+                  },
+                  "required": ["port"]
+                },
+                "initialDelaySeconds": {
+                  "description": "Seconds after start before the probe is initiated. Defaults to 0.",
+                  "type": "number",
+                  "minimum": 0
+                },
+                "timeoutSeconds": {
+                  "description": "Number of seconds after which the probe times out. Defaults to 1 second if not defined. Minimum value is 1.",
+                  "type": "number",
+                  "minimum": 1
+                },
+                "periodSeconds": {
+                  "description": "How often (in seconds) to perform the probe. Default to 10 seconds. The minimum value is 1.",
+                  "type": "number",
+                  "minimum": 1
+                },
+                "failureThreshold": {
+                  "description": "Consecutive failures before the probe is considered failed. Defaults to 3.",
+                  "type": "number",
+                  "minimum": 1
+                },
+                "terminationGracePeriodSeconds": {
+                  "description": "Grace period before forceful termination. Defaults to 30.",
+                  "type": "number",
+                  "minimum": 1
+                }
+              },
+              "oneOf": [
+                { "required": ["exec"] },
+                { "required": ["httpGet"] },
+                { "required": ["tcpSocket"] },
+                { "required": ["grpc"] }
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "rbac": {
+      "type": "object",
+      "description": "Schema for configuring RBAC in the deployment, including enabling/disabling RBAC, specifying service account details, custom labels and annotations, additional role definitions, and an option to use an existing service account.",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable RBAC for the deployment."
+        },
+        "name": {
+          "type": "string",
+          "minLength": 0,
+          "description": "Name of the Service Account for RBAC. If not provided, the fullname template value is used."
+        },
+        "labels": {
+          "type": "object",
+          "description": "Custom labels for the Service Account."
+        },
+        "annotations": {
+          "type": "object",
+          "description": "Custom annotations for the Service Account."
+        },
+        "roles": {
+          "type": "array",
+          "description": "Definitions for any additional namespaced Roles. Each role should include a name and a set of rules.",
+          "items": {
+            "type": "object",
+            "description": "A role object that defines a namespaced role.",
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "The name of the role."
+              },
+              "rules": {
+                "type": "array",
+                "description": "An array of rules for the role. Each rule defines API groups, resources (or nonResourceURLs), and verbs.",
+                "minItems": 0,
+                "items": {
+                  "type": "object",
+                  "description": "A rule object for a role. Specifies the allowed verbs for specific API groups and resources or nonResourceURLs.",
+                  "properties": {
+                    "apiGroups": {
+                      "type": "array",
+                      "description": "List of API groups that contain the resources. An empty string indicates the core API group.",
+                      "items": {"type": "string"}
+                    },
+                    "resources": {
+                      "type": "array",
+                      "description": "List of resources the rule applies to.",
+                      "items": {"type": "string"}
+                    },
+                    "verbs": {
+                      "type": "array",
+                      "description": "List of verbs that apply to the resources. Must contain at least one verb.",
+                      "items": {"type": "string"},
+                      "minItems": 1
+                    },
+                    "resourceNames": {
+                      "type": "array",
+                      "description": "Optional list of specific resource names the rule applies to.",
+                      "items": {"type": "string"}
+                    },
+                    "nonResourceURLs": {
+                      "type": "array",
+                      "description": "Optional list of non-resource URLs the rule applies to.",
+                      "items": {"type": "string"}
+                    }
+                  },
+                  "anyOf": [
+                    {"required": ["resources"]},
+                    {"required": ["nonResourceURLs"]}
+                  ],
+                  "required": ["verbs"],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": ["name", "rules"],
+            "additionalProperties": true
+          }
+        },
+        "existingName": {
+          "type": "string",
+          "description": "Use an existing Service Account (overrides the other settings)."
+        }
+      },
+      "required": ["enabled"],
+      "dependencies": {
+        "roles": {
+
+        }
+      },
+      "additionalProperties": true
+    },
+    "replicaCount": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "resources": {
+      "type": "object"
+    },
+    "secret": {
+      "type": "object",
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "annotations": { "type": "object" },
+        "labels": { "type": "object" },
+        "data": { "type": "object" },
+        "encodedData": { "type": "object" },
+        "stringData": { "type": "object" }
+      },
+      "required": ["enabled", "annotations", "labels", "data", "encodedData", "stringData"],
+      "additionalProperties": true
+    },
+    "securityContext": {"type": "object"},
+    "service": {
+      "type": "object",
+      "description": "Service configuration for exposing the application. A default http port is always appended to the service.",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable the service."
+        },
+        "annotations": {
+          "type": "object",
+          "description": "Annotations for the Service resource.",
+          "additionalProperties": { "type": "string" }
+        },
+        "labels": {
+          "type": "object",
+          "description": "Labels for the Service resource.",
+          "additionalProperties": { "type": "string" }
+        },
+        "ports": {
+          "type": "object",
+          "description": "Port configuration for the service. Each key (e.g. 'http-default') maps to a port configuration entry.",
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "object",
+                "description": "Port configuration entry.",
+                "properties": {
+                  "port": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 65535,
+                    "description": "Port on which the service will be exposed. Example: 80."
+                  },
+                  "targetPort": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 65535,
+                    "description": "The target port on the pod. If not set, defaults to .Values.port. Example: 8080."
+                  },
+                  "protocol": {
+                    "type": "string",
+                    "description": "(Optional) Protocol for the service. Defaults to TCP."
+                  }
+                },
+                "required": ["port","targetPort"],
+                "additionalProperties": false
+              },
+              { "type": "null" }
+            ]
+          }
+        }
+      },
+      "required": ["enabled"],
+      "additionalProperties": false
+    },
+    "tolerations": {
+      "type": "array",
+      "description": "List of tolerations to allow scheduling of pods onto nodes with matching taints (based on the Kubernetes toleration spec).",
+      "items": {
+        "type": "object",
+        "description": "A toleration defines a pod's ability to tolerate a node's taint.",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "The taint key that the toleration applies to."
+          },
+          "operator": {
+            "type": "string",
+            "enum": ["Exists", "Equal"],
+            "description": "Specifies the relationship between the key and value. 'Equal' requires a matching value; 'Exists' means only the key is required."
+          },
+          "value": {
+            "type": "string",
+            "description": "The taint value to match. Required if operator is 'Equal'."
+          },
+          "effect": {
+            "type": "string",
+            "enum": ["NoSchedule", "PreferNoSchedule", "NoExecute"],
+            "description": "The taint effect to match."
+          },
+          "tolerationSeconds": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "The period (in seconds) for which the pod tolerates the taint. Only applicable for the 'NoExecute' effect."
+          }
+        },
+        "required": ["key", "operator", "effect"],
+        "additionalProperties": false,
+        "if": {
+          "properties": { "operator": { "const": "Equal" } }
+        },
+        "then": {
+          "required": ["value"]
+        }
+      }
+    },
+    "topologySpreadConstraints": {
+      "type": "array",
+      "description": "List of topology spread constraints to apply to the pods.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "maxSkew": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The maximum permitted skew. Must be greater than zero."
+          },
+          "minDomains": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Optional minimum number of eligible domains. Only allowed with whenUnsatisfiable: DoNotSchedule."
+          },
+          "topologyKey": {
+            "type": "string",
+            "minLength": 1,
+            "description": "The node label key to denote the topology domain."
+          },
+          "whenUnsatisfiable": {
+            "type": "string",
+            "enum": ["DoNotSchedule", "ScheduleAnyway"],
+            "description": "Indicates how to handle pods that don't satisfy the constraint."
+          },
+          "labelSelector": {
+            "type": "object",
+            "properties": {
+              "matchLabels": {
+                "type": "object",
+                "description": "Map of {key, value} pairs for label selection.",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "matchExpressions": {
+                "type": "array",
+                "description": "List of label selector requirements.",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "key": { "type": "string" },
+                    "operator": {
+                      "type": "string",
+                      "enum": ["In", "NotIn", "Exists", "DoesNotExist"]
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    }
+                  },
+                  "required": ["key", "operator"],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": ["matchLabels"],
+            "additionalProperties": false,
+            "description": "Label selector to match existing pods."
+          },
+          "matchLabelKeys": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Optional list of pod label keys for matching. Beta since v1.27."
+          },
+          "nodeAffinityPolicy": {
+            "type": "string",
+            "enum": ["Honor", "Ignore"],
+            "description": "Optional policy to decide whether to include nodes based on pod's node affinity/nodeSelector. Beta since v1.26."
+          },
+          "nodeTaintsPolicy": {
+            "type": "string",
+            "enum": ["Honor", "Ignore"],
+            "description": "Optional policy to decide whether to include nodes based on node taints. Beta since v1.26."
+          }
+        },
+        "required": ["maxSkew", "topologyKey", "whenUnsatisfiable"],
+        "dependencies": {
+          "minDomains": {
+            "properties": {
+              "whenUnsatisfiable": { "const": "DoNotSchedule" }
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": true
+}

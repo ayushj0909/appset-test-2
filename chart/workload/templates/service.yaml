@@ -1,0 +1,19 @@
+{{- if .Values.service.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "fullname" . }}
+  annotations:
+  {{- include "common.annotations" . | nindent 4 }}
+  {{- if .Values.service.annotations }}
+  {{- toYaml .Values.service.annotations | nindent 4 }}
+  {{- end}}
+  labels:
+  {{- include "common.labels" . | nindent 4 }}
+  {{- if .Values.service.labels }}
+  {{- toYaml .Values.service.labels | nindent 4 }}
+  {{- end }}
+spec:
+  ports: {{ include "common.servicePorts" . | nindent 4 }}
+  selector: {{ include "common.selector" . | nindent 4 }}
+{{- end }}

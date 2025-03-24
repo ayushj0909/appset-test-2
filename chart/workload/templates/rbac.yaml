@@ -1,0 +1,49 @@
+{{- if and (eq .Values.rbac.enabled true) (not .Values.rbac.existingName )}}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ default (include "fullname" .) .Values.rbac.name }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+  {{- include "common.labels" . | nindent 4 }}
+  {{- if .Values.rbac.labels }}
+  {{- toYaml .Values.rbac.labels | nindent 4 }}
+  {{- end }}
+  annotations:
+  {{- include "common.annotations" . | nindent 4 }}
+  {{- if .Values.rbac.annotations }}
+  {{- toYaml .Values.rbac.annotations | nindent 4 }}
+  {{- end }}
+{{- end }}
+
+{{- if and (.Values.rbac.enabled) (.Values.rbac.roles) (not .Values.rbac.existingName ) }}
+{{- range .Values.rbac.roles }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "fullname" $ }}-role-{{ .name }}
+  namespace: {{ $.Release.Namespace | quote }}
+  annotations: {{- include "common.annotations" $ | nindent 4 }}
+  labels: {{- include "common.labels" $ | nindent 4 }}
+rules: {{- toYaml .rules | nindent 2 }}
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "fullname" $ }}-rolebinding-{{ .name }}
+  namespace: {{ $.Release.Namespace | quote }}
+  annotations: {{- include "common.annotations" $ | nindent 4 }}
+  labels: {{- include "common.labels" $ | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "fullname" $ }}-role-{{ .name }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ default (include "fullname" $) ($.Values.rbac.name) }}
+    namespace: {{ $.Release.Namespace }}
+{{- end }}
+{{- end }}

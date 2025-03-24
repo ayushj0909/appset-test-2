@@ -1,0 +1,50 @@
+{{- $appName := include "fullname" . -}}
+{{- if .Values.ingress.internal.enabled -}}
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: "internal-{{ $appName }}"
+  annotations: {{- include "common.annotations" . | nindent 4 }}
+  labels: {{- include "common.labels" . | nindent 4 }}
+spec:
+  hosts:
+  - "{{ $appName }}.{{ .Release.Namespace }}.internal.{{ .Values.ingress.domain }}"
+  {{- range .Values.ingress.internal.extraHosts }}
+  - "{{ . }}"
+  {{- end }}
+  gateways:
+  {{- range .Values.ingress.internal.gateways }}
+  - "{{ . }}"
+  {{- end }}
+  http:
+  - match:
+    - uri:
+        prefix: "/"
+    route:
+    - destination:
+        host: "{{ $appName }}"
+{{- end}}
+---
+{{- if .Values.ingress.external.enabled -}}
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: "{{ $appName }}"
+spec:
+  hosts:
+  - "{{ $appName }}.{{ .Release.Namespace }}.{{ .Values.ingress.domain }}"
+  {{- range .Values.ingress.external.extraHosts }}
+  - "{{ . }}"
+  {{- end }}
+  gateways:
+  {{- range .Values.ingress.external.gateways }}
+  - "{{ . }}"
+  {{- end }}
+  http:
+  - match:
+    - uri:
+        prefix: "/"
+    route:
+    - destination:
+        host: "{{ $appName }}"
+{{- end -}}

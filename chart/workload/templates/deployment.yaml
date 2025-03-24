@@ -1,0 +1,166 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{- include "common.labels" . | nindent 4 }}
+  annotations: {{- include "common.annotations" . | nindent 4 }}
+spec:
+  {{- if .Values.deployment.minReadySeconds}}
+  minReadySeconds: {{ .Values.deployment.minReadySeconds }}
+  {{- end }}
+  {{- if .Values.deployment.paused }}
+  paused: {{ .Values.deployment.paused}}
+    {{- end }}
+  {{- if .Values.deployment.progressDeadlineSeconds }}
+  progressDeadlineSeconds: {{ .Values.deployment.progressDeadlineSeconds }}
+  {{- end }}
+  replicas: {{ .Values.replicaCount }}
+  {{- if .Values.deployment.revisionHistoryLimit }}
+  revisionHistoryLimit: {{ .Values.deployment.revisionHistoryLimit }}
+  {{- end }}
+  selector:
+    matchLabels: {{- include "common.selector" . | nindent 6 }}
+  strategy:
+    {{- if .Values.deployment.updateStrategy}}
+    type: {{ .Values.deployment.updateStrategy.type }}
+    {{- if .Values.deployment.updateStrategy.rollingUpdate }}
+    rollingUpdate:
+      {{- if .Values.deployment.updateStrategy.rollingUpdate.maxSurge }}
+      maxSurge: {{ .Values.deployment.updateStrategy.rollingUpdate.maxSurge }}
+      {{- end }}
+      {{- if .Values.deployment.updateStrategy.rollingUpdate.maxUnavailable }}
+      maxUnavailable: {{ .Values.deployment.updateStrategy.rollingUpdate.maxUnavailable }}
+      {{- end }}
+    {{- end}}
+    {{- end}}
+  template:
+    metadata:
+      annotations:
+        {{- include "common.annotations" . | nindent 8 }}
+        {{- if .Values.podAnnotations }}
+        {{- toYaml .Values.podAnnotations | nindent 8 }}
+        {{- end}}
+      labels:
+        {{- include "common.labels" . | nindent 8 }}
+        {{- if .Values.podLabels}}
+        {{- toYaml .Values.podLabels | nindent 8 }}
+        {{- end}}
+    spec:
+      {{- if .Values.affinity }}
+      affinity: {{- tpl (toYaml .Values.affinity) . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ default ( include "fullname" .) .Values.container.name -}}
+          {{- if .Values.envOverride }}
+          env:
+          {{- range $key, $value := .Values.envOverride }}
+            - name: {{ $key }}
+              value: {{ $value }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.container.entrypoint }}
+          command:
+          {{- range .Values.container.entrypoint}}
+            - {{ . | quote }}
+          {{- end}}
+          {{- end }}
+          {{- if .Values.container.args }}
+          args:
+          {{- range .Values.container.args}}
+            - {{ . | quote}}
+          {{- end }}
+          {{- end}}
+          {{- if or (.Values.env) (eq .Values.secret.enabled true) (eq .Values.externalSecret.enabled true) }}
+          envFrom:
+            {{- if .Values.env }}
+            - configMapRef:
+                name: {{ include "fullname" . }}
+            {{- end }}
+            {{- if .Values.extraConfigMaps }}
+            {{- range .Values.extraConfigMaps }}
+            - configMapRef:
+                name: {{ . }}
+              {{- end }}
+            {{- end }}
+            {{- if and (eq .Values.secret.enabled true) (or .Values.secret.data .Values.secret.encodedData .Values.secret.stringData) }}
+            - secretRef:
+                name: {{ include "fullname" . }}-static
+            {{- end}}
+            {{- if and (eq .Values.externalSecret.enabled true) (.Values.externalSecret.data) }}
+            - secretRef:
+                name: {{ include "fullname" . }}-external-secret
+            {{- end}}
+          {{- end }}
+          image: "{{.Values.image.registry}}/{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ required "Container port is required" .Values.port }}
+          {{- if .Values.container.extraPorts }}
+            {{- range .Values.container.extraPorts }}
+            - containerPort: {{ required "Container port is required" .containerPort }}
+              {{- if .name}}
+              name: {{ .name}}
+              {{- end }}
+              {{- if .protocol }}
+              protocol: {{ .protocol }}
+              {{- end}}
+            {{- end }}
+          {{- end }}
+          {{- if .Values.probes.livenessProbe }}
+          livenessProbe: {{- toYaml .Values.probes.livenessProbe | nindent 12 }}
+          {{- end}}
+          {{- if .Values.probes.readinessProbe }}
+          readinessProbe: {{- toYaml .Values.probes.readinessProbe | nindent 12 }}
+          {{- end}}
+          {{- if .Values.probes.startupProbe }}
+          startupProbe: {{- toYaml .Values.probes.startupProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.resources }}
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+          {{- end }}
+          {{- if or (eq .Values.persistence.enabled true) .Values.extraVolumeMounts }}
+          volumeMounts:
+            {{- if (and (eq .Values.persistence.enabled true ) (eq .Values.persistence.mountPVC true)) }}
+            - name: {{ default (include "fullname" .) }}-data
+              mountPath: {{ .Values.persistence.mountPath }}
+            {{- end }}
+            {{- if .Values.extraVolumeMounts }}
+              {{- toYaml .Values.extraVolumeMounts | nindent 12 }}
+            {{- end}}
+          {{- end }}
+        {{- if .Values.extraContainers }}
+          {{- toYaml .Values.extraContainers | nindent 8 }}
+        {{- end }}
+      {{- if .Values.initContainers }}
+      initContainers: {{- toYaml .Values.initContainers | nindent 8 }}
+      {{- end }}
+      {{- if .Values.nodeSelector}}
+      nodeSelector: {{- toYaml .Values.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if eq .Values.rbac.enabled true }}
+      serviceAccountName: {{ default (include "fullname" .) (default .Values.rbac.name .Values.rbac.existingName) }}
+      {{- end }}
+      {{- if .Values.securityContext }}
+      {{- end }}
+      {{- if .Values.securityContext }}
+      securityContext: {{- toYaml .Values.securityContext | nindent 8 }}
+      {{- end}}
+      {{- if .Values.tolerations }}
+      tolerations: {{- toYaml .Values.tolerations | nindent 8 }}
+      {{- end}}
+      {{- if .Values.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- toYaml .Values.topologySpreadConstraints | nindent 8 }}
+      {{- end}}
+      {{- if or (eq .Values.persistence.enabled true) (.Values.extraVolumes) }}
+      volumes:
+        {{- if eq .Values.persistence.enabled true }}
+        - name: {{ default (include "fullname" .) }}-data
+          persistentVolumeClaim:
+            claimName: {{ default (include "fullname" .) .Values.persistence.name }}
+        {{- end }}
+        {{- if .Values.extraVolumes }}
+          {{- toYaml .Values.extraVolumes | nindent 8 }}
+        {{- end}}
+      {{- end }}

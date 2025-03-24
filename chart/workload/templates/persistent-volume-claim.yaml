@@ -1,0 +1,37 @@
+{{- if and (.Values.persistence).enabled (not .Values.persistence.existingClaim) }}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ default (include "fullname" .) .Values.persistence.name }}
+  namespace: {{ .Release.Namespace | quote }}
+  annotations:
+  {{- include "common.annotations" . | nindent 4 }}
+  {{- if .Values.persistence.annotations }}
+  {{- toYaml .Values.persistence.annotations | nindent 4 }}
+  {{- end}}
+  labels:
+  {{- include "common.labels" . | nindent 4 }}
+  {{- if .Values.persistence.labels }}
+  {{ toYaml .Values.persistence.labels | nindent 4 }}
+  {{- end }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.storageSize | quote }}
+  {{- if .Values.persistence.storageClass }}
+    {{- if (eq "-" .Values.persistence.storageClass) }}
+  storageClassName: ""
+    {{- else }}
+  storageClassName: "{{ .Values.persistence.storageClass }}"
+    {{- end }}
+{{- end }}
+{{- if .Values.persistence.volumeMode }}
+  volumeMode: "{{ .Values.persistence.volumeMode }}"
+{{- end }}
+{{- if .Values.persistence.volumeName }}
+  volumeName: "{{ .Values.persistence.volumeName }}"
+{{- end }}
+{{- end }}

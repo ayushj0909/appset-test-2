@@ -1,0 +1,31 @@
+{{- if .Values.podDisruptionBudget.enabled }}
+  {{- if or .Values.podDisruptionBudget.maxUnavailable .Values.podDisruptionBudget.minAvailable }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "fullname" . }}
+  annotations:
+  {{- include "common.annotations" . | nindent 4 }}
+  {{- if .Values.service.annotations }}
+  {{- toYaml .Values.service.annotations | nindent 4 }}
+  {{- end}}
+  labels:
+  {{- include "common.labels" . | nindent 4 }}
+  {{- if .Values.service.labels }}
+  {{ toYaml .Values.service.labels | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if and .Values.podDisruptionBudget.minAvailable .Values.podDisruptionBudget.maxUnavailable }}
+    {{- fail "You can only specify one of minAvailable or maxUnavailable" }}
+  {{- end }}
+  {{- if .Values.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ .Values.podDisruptionBudget.maxUnavailable }}
+  {{- end }}
+  {{- if .Values.podDisruptionBudget.minAvailable }}
+  minAvailable: {{.Values.podDisruptionBudget.minAvailable }}
+  {{- end }}
+  selector:
+    matchLabels:
+      amnic.io/app: {{ include "fullname" . }}
+  {{- end }}
+{{- end }}

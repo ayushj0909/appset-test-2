@@ -1,0 +1,380 @@
+# Global configuration settings that apply to all resources created by this chart.
+global:
+  # Custom annotations to attach to all Kubernetes objects.
+  # Example: {"prometheus.io/scrape": "true"}
+  annotations: {}
+  # Custom labels to attach to all Kubernetes objects.
+  # Example: {"app": "myapp", "environment": "production"}
+  labels: {}
+  # A short description for the chart.
+  # Example: "Helm chart for deploying the MyApp application"
+  description: ''
+  # Overrides the generated full name for Kubernetes objects.
+  # Example: "custom-myapp-name"
+  fullnameOverride: ''
+
+# Affinity rules for scheduling pods on specific nodes.
+# Example: {"nodeAffinity": { ... }}
+affinity: {}
+
+# Configuration for a ConfigMap resource.
+configMap:
+  # Annotations for the ConfigMap.
+  # Example: {"checksum/config": "abcdef123456"}
+  annotations: {}
+  # Labels for the ConfigMap.
+  # Example: {"config": "app-config"}
+  labels: {}
+
+# Main container configuration.
+container:
+  # The name of the primary container.
+  # Example: "myapp-container"
+  name: ''
+  # Overrides for the container's entrypoint command.
+  # Example: ["python", "app.py"]
+  entrypoint: []
+  # Command-line arguments for the container.
+  # Example: ["--config", "/etc/myapp/config.yaml"]
+  args: []
+  # Additional ports to expose from the container.
+  # Example:
+  #   - name: metrics
+  #     containerPort: 8800
+  #     protocol: TCP
+  extraPorts: []
+
+# Deployment settings for controlling how the application is rolled out.
+deployment:
+  # The minimum number of seconds a newly created pod should be ready without crashing.
+  # Example: 15
+  minReadySeconds:
+  # Flag to pause the deployment so that no new updates are processed.
+  paused:
+  # The maximum number of seconds allowed for a deployment to show progress.
+  # Example: 240
+  progressDeadlineSeconds:
+  # The number of old ReplicaSets to retain for rollback purposes.
+  # Example: 3
+  revisionHistoryLimit: 3
+  # Update strategy for the deployment. Options: "RollingUpdate" or "Recreate".
+  updateStrategy:
+    type: 'RollingUpdate'
+    rollingUpdate:
+      # Maximum surge, expressed as an absolute number or a percentage.
+      # Example: "2" (or "50%")
+      maxSurge: '2'
+      # Maximum number of pods that can be unavailable during the update.
+      # Example: "0" ensures no downtime.
+      maxUnavailable: '0'
+
+# External secret management integration.
+externalSecret:
+  # Enable external secret management.
+  enabled: false
+  labels: {}
+  annotations: {}
+  # Define which external SecretStore to use.
+  secretStore:
+    name: ''    # Example: "my-secret-store"
+    kind: ''    # Either "SecretStore" or "ClusterSecretStore"
+  # Interval for refreshing secrets (use valid duration strings, e.g., "30s", "5m").
+  refreshInterval: "0"
+  # Policy for associating the secret with the owner.
+  # Options: "Owner", "Orphan", "Merge", or "None"
+  creationPolicy: 'Owner'
+  # Policy for deleting the secret.
+  # Options: "Retain", "Delete", or "Merge"
+  deletionPolicy: 'Retain'
+  # The type of the secret (e.g., "Opaque", "kubernetes.io/tls").
+  type: 'Opaque'
+  # External references to fetch data from.
+  dataFrom: []
+  # Example for a remote reference:
+  # dataFrom:
+  #   - key: "example-secret-key"
+  #     property: "provider-key-property"
+  data: {}
+  # data:
+  #   example-secret-key:
+  #     key: "provider-key"
+  #     property: "provider-key-property"
+
+# List of additional ConfigMaps to load environment variables from.
+# Example: ["configMap-1", "configMap-2"]
+extraConfigMaps: []
+
+# List of additional containers (sidecars) to run in the same pod.
+# Example:
+#   - name: sidecar
+#     image: "sidecar:latest"
+extraContainers: []
+
+# List of additional raw Kubernetes manifests to be included in the release.
+# Example: ["manifests/extra-service.yaml"]
+extraManifests: []
+
+# List of extra volumes to attach to the pod.
+# Example: [{name: "data-volume", emptyDir: {}}]
+extraVolumes: []
+
+# List of extra volume mounts for the main container.
+# Example: [{name: "data-volume", mountPath: "/data"}]
+extraVolumeMounts: []
+
+# Environment variables for the main container.
+# Example: {"ENV_VAR": "value", "DEBUG": "true"}
+env: {}
+
+# Override for the default environment variables.
+envOverride: {}
+
+# Image configuration for the main container.
+image:
+  # The image pull policy. Options: "Always", "IfNotPresent", or "Never".
+  pullPolicy: 'IfNotPresent'
+  # Docker registry for the image.
+  # Example: "docker.io"
+  registry: 'docker.io'
+  # Repository name for the image.
+  # Example: "myapp"
+  repository: 'nginx'
+  # Tag of the image. Defaults to "latest" if omitted.
+  tag: 'latest'
+
+# Configuration for init containers (containers that run before the main container).
+# Example:
+#   - name: init-container
+#     image: "init-image:latest"
+initContainers: []
+
+# Ingress configuration for Istio-based ingress.
+ingress:
+  # Domain name to be used for the ingress.
+  # Example: "example.com"
+  domain: ''
+  external:
+    # Enable external ingress configuration.
+    enabled: false
+    # List of external gateway names.
+    # Example: ["istio-egressgateway"]
+    gateways: []
+    # Additional external hostnames.
+    # Example: ["host1.example.com", "host2.example.com"]
+    extraHosts: []
+  internal:
+    # Enable internal ingress configuration.
+    enabled: false
+    # List of internal gateway names.
+    # Example: ["istio-ingressgateway"]
+    gateways: []
+    # Additional internal hostnames.
+    extraHosts: []
+
+# Horizontal Pod Autoscaler (HPA) settings.
+hpa:
+  # Enable HPA for the deployment.
+  enabled: false
+  # Custom annotations for the HPA object.
+  # Example: {"autoscaling.alpha.kubernetes.io/metrics": "[...json...]"}
+  annotations: {}
+  # Custom labels for the HPA object.
+  # Example: {"app": "myapp"}
+  labels: {}
+  # Minimum number of replicas.
+  minReplicas: 1
+  # Maximum number of replicas.
+  maxReplicas: 4
+  # Metrics configuration for autoscaling.
+  # Example:
+  #   - type: Resource
+  #     resource:
+  #       name: cpu
+  #       target:
+  #         type: Utilization
+  #         averageUtilization: 80
+  metrics: []
+  # Behavior configuration for scaling events.
+  behavior: {}
+
+# Node selector for specifying which nodes the pods should run on.
+# Example: {"disktype": "ssd"}
+nodeSelector: {}
+
+# Persistence configuration for stateful applications.
+persistence:
+  # Enable persistent storage.
+  enabled: false
+  # The name of the PVC to create and mount. If not set, the fullname template value is used.
+  # Example: "myapp-data"
+  name: ""
+  # Custom labels for the PersistentVolumeClaim.
+  # Example: {"app": "myapp", "tier": "backend"}
+  labels: {}
+  # Annotations for the PVC.
+  # Example: {"helm.sh/resource-policy": "keep"}
+  annotations: {}
+  # Access mode for the volume.
+  # Common values: ReadWriteOnce, ReadOnlyMany, ReadWriteMany.
+  accessMode: ReadWriteOnce
+  # Whether to mount the created PVC to the main container.
+  mountPVC: true
+  # Mount path inside the main container.
+  # Example: "/data"
+  mountPath: "/"
+  # Storage class for dynamic volume provisioning.
+  # Example: "standard". Set to "-" or "" to disable dynamic provisioning.
+  storageClass: null
+  # The size of the persistent volume.
+  # Example: "8Gi"
+  storageSize: 8Gi
+  # The name of an existing persistent volume to use.
+  volumeName: ""
+  # Volume mode, such as "Filesystem" or "Block".
+  volumeMode: ""
+  # Name of an existing PVC to use instead of creating a new one.
+  # Example: "existing-pvc-name"
+  existingClaim: ""
+
+# Custom annotations to attach to the pod.
+# Example: {"prometheus.io/scrape": "true"}
+podAnnotations: {}
+
+# Pod Disruption Budget (PDB) settings for managing voluntary disruptions.
+podDisruptionBudget:
+  # Enable PDB.
+  enabled: false
+  # Maximum number of pods that can be unavailable during a disruption.
+  # Example: "1"
+  maxUnavailable: ''
+  # Minimum number of pods that must be available.
+  # Example: "2"
+  minAvailable: ''
+
+# Additional labels to attach to the pod.
+# Example: {"tier": "backend"}
+podLabels: {}
+
+# Port on which the main container listens.
+# Example: "8080"
+port: 80
+
+# Health probe configurations for the main container.
+probes:
+  # Liveness probe to check if the container is running.
+  # Example:
+  #   httpGet:
+  #     path: "/healthz"
+  #     port: 8080
+  #   initialDelaySeconds: 30
+  #   periodSeconds: 10
+  livenessProbe: {}
+  # Readiness probe to determine if the container is ready to accept traffic.
+  # Example:
+  #   httpGet:
+  #     path: "/ready"
+  #     port: 8080
+  #   initialDelaySeconds: 15
+  #   periodSeconds: 5
+  readinessProbe: {}
+  # Startup probe for containers with a slow startup.
+  # Example:
+  #   httpGet:
+  #     path: "/startup"
+  #     port: 8080
+  #   failureThreshold: 30
+  #   periodSeconds: 10
+  startupProbe: {}
+
+# RBAC (Role-Based Access Control) settings.
+rbac:
+  # Enable RBAC for the deployment.
+  enabled: false
+  # Default Service Account name for RBAC. If not provided, the fullname template value is used.
+  name: ''
+  # Custom labels for the Service Account.
+  labels: {}
+  # Custom annotations for the Service Account.
+  annotations: {}
+  # Definitions for any additional namespaced Roles.
+  roles: []
+  # Example Role:
+  #   - name: configmaps
+  #     rules:
+  #       - apiGroups: [""]
+  #         resources: ["configmaps"]
+  #         verbs: ["get", "list", "watch"]
+  # Use an existing Service Account (overrides the above settings).
+  existingName: ""
+
+# Number of pod replicas for the deployment.
+replicaCount: 1
+
+# Resource limits and requests for the main container.
+resources: {}
+# Example:
+# resources:
+#   limits:
+#     cpu: "2"
+#     memory: "1Gi"
+#   requests:
+#     cpu: "250m"
+#     memory: "64Mi"
+
+# Secret configuration for the application.
+secret:
+  # Enable secret creation.
+  enabled: false
+  # Annotations to add to the Secret.
+  annotations: {}
+  # Labels to add to the Secret.
+  labels: {}
+  # Secret data in unencoded format.
+  data: {}
+  # Secret data in Base64-encoded format.
+  encodedData: {}
+  # String data to store in the Secret.
+  stringData: {}
+
+# Security context for the pod.
+securityContext: {}
+
+# Service configuration for exposing the application.
+service:
+  # Enable the service.
+  enabled: false
+  # Annotations for the Service resource.
+  annotations: {}
+  # Labels for the Service resource.
+  labels: {}
+  # Ports configuration:
+  # NOTE: A default HTTP port (port: 80, targetPort: .Values.port) is always prepended.
+  #       This default can be overridden by defining .Values.ports.http-default.
+  ports: {}
+#    https:
+#      # Port on which the service will be exposed.
+#      # Example: "80"
+#      port: 443
+#      # The target port on the pod (if not set, defaults to .Values.port).
+#      # Example: "8080"
+#      targetPort: '8080'
+#      # Protocol for the port. Options: "TCP" or "UDP".
+#      protocol: 'TCP'
+
+# Tolerations allow pods to be scheduled on nodes with specific taints.
+# Example:
+#   - key: "key1"
+#     operator: "Equal"
+#     value: "value1"
+#     effect: "NoSchedule"
+tolerations: []
+
+# Topology Spread Constraints to help distribute pods across failure domains.
+# Example:
+#   - maxSkew: 1
+#     topologyKey: "topology.kubernetes.io/zone"
+#     whenUnsatisfiable: "DoNotSchedule"
+#     labelSelector:
+#       matchLabels:
+#         app: myapp
+topologySpreadConstraints: []
