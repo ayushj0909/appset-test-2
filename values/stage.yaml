@@ -1,7 +1,0 @@
-replicaCount: 0
-name: staging
-image:
-  repository: nginx
-  tag: "1.21.0"
-  pullPolicy: Always
-

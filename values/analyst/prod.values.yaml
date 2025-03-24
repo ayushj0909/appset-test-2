@@ -1,0 +1,116 @@
+global:
+  description: "A query template and a query builder"
+env:
+  ATHENA_QUERY_BUCKET: '"s3://amnic-athena-results/analyst/prod"'
+  ATHENA_REGION: ap-south-1
+  COMMONS_LOG_LEVEL: ERROR
+  DD_AGENT_HOST: datadog.internal.amnic.me
+  DD_ENV: prod
+  DD_TRACE_AGENT_PORT: "80"
+  FORECASTING_SERVICE_HOST: forecasting
+  FORECASTING_SERVICE_PORT: "-1"
+  MAIN_LOG_LEVEL: INFO
+  MYSQL_URL: jdbc:mysql://analyst.beta.mysql.db.prod.amnic.com:3306/analyst
+  MYSQL_USERNAME: analyst_rw
+  PROM_AUTH: '"Basic Y29ydGV4X3VzZXI6YW1uaWNyb2Nrc0AyMDIy"'
+  PROM_HOST: metrics.amnic.me
+  PROM_STEP_VALUES: '{"last_5_min":"10s","last_15_min":"10s","last_30_min":"10s","last_1_hour":"30s","last_2_hours":"30s","last_3_hours":"30s","last_6_hours":"1m","last_12_hours":"1m","last_1_day":"1m","last_3_days":"5m","last_7_days":"5m","last_30_days":"30m"}'
+  QUERY_LIMIT: "10000"
+  REDIS_BUFFER_TIME_MINUTES: "60"
+  REDIS_CONNECT_TIMEOUT: "10000"
+  REDIS_CONNECTION_MINIMUM_IDLE_SIZE: "10"
+  REDIS_CONNECTION_POOL_SIZE: "64"
+  REDIS_ENABLED: "true"
+  REDIS_IDLE_CONNECTION_TIMEOUT: "10000"
+  REDIS_RETRY_ATTEMPTS: "3"
+  REDIS_RETRY_INTERVAL: "1500"
+  REDIS_SUBSCRIPTION_CONNECTION_MINIMUM_IDLE_SIZE: "1"
+  REDIS_SUBSCRIPTION_CONNECTION_POOL_SIZE: "50"
+  REDIS_SUBSCRIPTION_PER_CONNECTIONS: "5"
+  REDIS_TIMEOUT: "3000"
+  REDIS_URL: rediss://master.prod-redis.g0bsh0.aps1.cache.amazonaws.com:6379
+  REDIS_USERNAME: ""
+  SERVICE_LOG_LEVEL: INFO
+  UTOPIA_HOST: utopia
+  UTOPIA_PORT: "-1"
+externalSecret:
+  enabled: true
+  data:
+    MYSQL_PASSWORD:
+      remoteRef:
+        key: analyst_MYSQL_PASSWORD_prod
+    REDIS_PASSWORD:
+      remoteRef:
+        key: REDIS_PASSWORD_PROD
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 4
+  metrics:
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 150
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 60
+image:
+  repository: analyst
+  tag: "793de27-93"
+ingress:
+  external:
+    enabled: false
+  internal:
+    enabled: true
+port: 8089
+probes:
+  livenessProbe:
+    httpGet: &scheme
+      path: /health/ping
+      port: 8089
+      scheme: HTTP
+    failureThreshold: 3
+    periodSeconds: 30
+    successThreshold: 1
+    timeoutSeconds: 3
+  readinessProbe:
+    httpGet: *scheme
+    failureThreshold: 3
+    periodSeconds: 5
+    successThreshold: 1
+    timeoutSeconds: 3
+  startupProbe:
+    httpGet: *scheme
+    failureThreshold: 3
+    initialDelaySeconds: 5
+    periodSeconds: 30
+    successThreshold: 1
+    timeoutSeconds: 20
+replicaCount: 2
+resources:
+  limits:
+    cpu: 2
+    memory: 8G
+  requests:
+    cpu: 200m
+    memory: 4G
+service:
+  enabled: true
+  ports:
+    port: 80
+serviceAccount:
+  enabled: true
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::924148612171:role/amnic-production-ssm-access

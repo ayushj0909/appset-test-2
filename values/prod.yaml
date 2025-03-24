@@ -1,7 +1,0 @@
-replicaCount: 0
-name: prod
-image:
-  repository: nginx
-  tag: "1.21.1"
-  pullPolicy: IfNotPresent
-
