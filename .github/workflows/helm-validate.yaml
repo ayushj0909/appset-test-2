@@ -33,12 +33,12 @@ jobs:
           while IFS= read -r line; do
             if [[ "$line" =~ ^/workspace/rendered.yaml ]]; then
               clean_line="${line#/workspace/rendered.yaml - }"
-              if [[ "$clean_line" == *"valid"* ]]; then
-                echo "✅ $clean_line" >> $GITHUB_STEP_SUMMARY
-              elif [[ "$clean_line" == *"failed"* ]]; then
+              if [[ "$clean_line" == *"failed"* ]]; then
                 echo "❌ $clean_line" >> $GITHUB_STEP_SUMMARY
               elif [[ "$clean_line" == *"error"* ]]; then
                 echo "⚠️ $clean_line" >> $GITHUB_STEP_SUMMARY
+              elif [[ "$clean_line" == *"valid"* ]]; then
+                echo "✅ $clean_line" >> $GITHUB_STEP_SUMMARY
               else
                 echo "$clean_line" >> $GITHUB_STEP_SUMMARY
               fi
