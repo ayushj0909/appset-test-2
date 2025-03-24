@@ -31,20 +31,38 @@ jobs:
         if: always()
         run: |
           echo "## Kubeconform Results" >> $GITHUB_STEP_SUMMARY
+          # Create Markdown table header
+          echo "| Resource Kind | Resource Name | Result | Reason |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------------|---------------|--------|--------|" >> $GITHUB_STEP_SUMMARY
+      
           while IFS= read -r line; do
+            # Process only lines starting with the expected prefix
             if [[ "$line" =~ ^/workspace/rendered.yaml ]]; then
+              # Remove the prefix "/workspace/rendered.yaml - " from the line
               clean_line="${line#/workspace/rendered.yaml - }"
-              resource=$(echo "$clean_line" | awk '{print $1}')
-              rest=$(echo "$clean_line" | cut -d' ' -f2-)
+              # Extract Resource Kind (first word) and Resource Name (second word)
+              resource_kind=$(echo "$clean_line" | awk '{print $1}')
+              resource_name=$(echo "$clean_line" | awk '{print $2}')
+              # Initialize result and reason
+              result=""
+              reason=""
+              # Check the line for failure or error first
               if [[ "$clean_line" == *"failed"* ]]; then
-                echo "❌ **$resource** $rest" >> $GITHUB_STEP_SUMMARY
+                result="❌ invalid"
+                # Extract text after "failed validation:" if present, otherwise leave as-is
+                reason=$(echo "$clean_line" | sed -E 's/.*failed validation:[[:space:]]*(.*)/\1/')
               elif [[ "$clean_line" == *"error"* ]]; then
-                echo "⚠️ **$resource** $rest" >> $GITHUB_STEP_SUMMARY
+                result="⚠️ error"
+                reason=$(echo "$clean_line" | sed -E 's/.*error:[[:space:]]*(.*)/\1/')
               elif [[ "$clean_line" == *"valid"* ]]; then
-                echo "✅ **$resource** $rest" >> $GITHUB_STEP_SUMMARY
-              else
-                echo "**$resource** $rest" >> $GITHUB_STEP_SUMMARY
+                result="✅ valid"
+                reason=""
               fi
+      
+              echo "| $resource_kind | $resource_name | $result | $reason |" >> $GITHUB_STEP_SUMMARY
             fi
           done < kubeconform_output.txt
-          echo "" >> $
+      
+          # Append the summary line after the table
+          echo "" >> $GITHUB_STEP_SUMMARY
+          grep '^Summary:' kubeconform_output.txt >> $GITHUB_STEP_SUMMARY
