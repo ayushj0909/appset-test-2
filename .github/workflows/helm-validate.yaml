@@ -6,7 +6,6 @@ on:
       - 'charts/**'
   workflow_dispatch:
 
-
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -20,15 +19,20 @@ jobs:
           version: v3.16.1
 
       - name: Render Helm Chart
-        run: helm template workload ./chart/workload --skip-schema-validation > rendered.yaml
+        run: |
+          helm template workload ./chart/workload --skip-schema-validation > rendered.yaml
 
       - name: Validate rendered manifests with kubeconform
         id: validate
         run: |
-          output=$(docker run --rm -v "${{ github.workspace }}:/workspace" ghcr.io/yannh/kubeconform:latest -summary -output text /workspace/rendered.yaml)
+          # Run kubeconform and capture the output
+          output=$(docker run --rm -v "${{ github.workspace }}:/workspace" ghcr.io/yannh/kubeconform:latest \
+            -summary -output text /workspace/rendered.yaml)
+
+          # For debugging you can still echo to console, but don't append to $GITHUB_STEP_SUMMARY
           echo "$output"
-          echo "$output" >> $GITHUB_STEP_SUMMARY
-          # Set the step output so it can be used in later steps
+
+          # Store the output so the next step can use it
           echo "output<<EOF" >> $GITHUB_OUTPUT
           echo "$output" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
@@ -37,20 +41,22 @@ jobs:
         run: |
           # Get the output from the previous step
           output="${{ steps.validate.outputs.output }}"
-          
-          # Process resource lines:
-          # - Select lines starting with '/workspace/rendered.yaml'
-          # - Remove the file prefix and color the resource name (the second word) in green.
+
+          # 1) Process resource lines:
+          #    - Only select lines starting with '/workspace/rendered.yaml'
+          #    - Remove the file prefix and color the resource name (the second word) in green.
           processed_resources=$(echo "$output" | \
             grep '^/workspace/rendered.yaml' | \
             sed -E 's|/workspace/rendered.yaml - ([^[:space:]]+)[[:space:]]+([^[:space:]]+)(.*)|\1 <span style="color:green;">\2</span>\3|')
-          
-          # Add emoji: green check (✅) for lines with "is valid" and red cross (❌) for lines with "failed validation"
+
+          # 2) Add emoji:
+          #    - Green check (✅) for lines with "is valid"
+          #    - Red cross (❌) for lines with "failed validation"
           processed_resources=$(echo "$processed_resources" | \
             sed -E '/is valid/ s|^|✅ |; /failed validation/ s|^|❌ |')
-          
-          # Process the final summary line:
-          # - Color "Valid" in green, "Invalid" and "Errors" in red, and "Skipped" in white.
+
+          # 3) Process the final summary line:
+          #    - Color "Valid" in green, "Invalid" and "Errors" in red, and "Skipped" in white.
           processed_summary=$(echo "$output" | \
             grep '^Summary:' | \
             sed -E \
@@ -58,8 +64,8 @@ jobs:
             -e 's/(Invalid: )([0-9]+)/\1<span style="color:red;">\2<\/span>/' \
             -e 's/(Errors: )([0-9]+)/\1<span style="color:red;">\2<\/span>/' \
             -e 's/(Skipped: )([0-9]+)/\1<span style="color:white;">\2<\/span>/')
-          
-          # Append the processed resource lines and the summary line to the GitHub step summary file.
+
+          # 4) Write only the processed results and summary to the GitHub Step Summary
           {
             echo "$processed_resources"
             echo "$processed_summary"
