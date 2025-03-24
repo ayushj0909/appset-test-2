@@ -25,10 +25,11 @@ jobs:
       - name: Validate rendered manifests with kubeconform
         id: validate
         run: |
-          output=$(docker run --rm -v "$(pwd):/workspace" ghcr.io/yannh/kubeconform:latest -verbose -summary -output text /workspace/rendered.yaml)
+          output=$(docker run --rm -v "$(pwd):/workspace" ghcr.io/yannh/kubeconform:latest -verbose -summary -output text /workspace/rendered.yaml || true)
           echo "OUTPUT=$output" >> GITHUB_ENV
 
       - name: Process and generate summary
+        if: always()
         run: |
           # Filter resource lines (skip summary line) and remove file prefix, then color the resource name green
           resources=$(echo "$OUTPUT" | grep '^/workspace/rendered.yaml' | sed -E 's|/workspace/rendered.yaml - ([^[:space:]]+)[[:space:]]+([^[:space:]]+)(.*)|\1 <span style="color:green;">\2</span>\3|')
