@@ -24,16 +24,13 @@ jobs:
 
       - name: Validate rendered manifests with kubeconform
         id: validate
-        run: |
-          output=$(docker run --rm -v "$(pwd):/workspace" ghcr.io/yannh/kubeconform:latest -verbose -summary -output text /workspace/rendered.yaml || true)
-          echo "OUTPUT=$output" >> $GITHUB_ENV
-          echo ${{env.OUTPUT}}
+        run: docker run --rm -v "$(pwd):/workspace" ghcr.io/yannh/kubeconform:latest -verbose -summary -output text /workspace/rendered.yaml | tee kubeconform_output.txt
 
       - name: Process and generate summary
         if: always()
         run: |
-          resources=$(echo "${{env.OUTPUT}}" | grep '^/workspace/rendered.yaml' | sed -E 's|/workspace/rendered.yaml - ([^[:space:]]+)[[:space:]]+([^[:space:]]+)(.*)|\1 <span style="color:green;">\2</span>\3|')          
-          summary=$(echo "${{env.OUTPUT}}" | grep '^Summary:' | sed -E 's/(Valid: )([0-9]+)/\1<span style="color:green;">\2<\/span>/; s/(Invalid: )([0-9]+)/\1<span style="color:red;">\2<\/span>/; s/(Errors: )([0-9]+)/\1<span style="color:red;">\2<\/span>/; s/(Skipped: )([0-9]+)/\1<span style="color:white;">\2<\/span>/')
+          resources=$(echo kubeconform_output.txt | grep '^/workspace/rendered.yaml' | sed -E 's|/workspace/rendered.yaml - ([^[:space:]]+)[[:space:]]+([^[:space:]]+)(.*)|\1 <span style="color:green;">\2</span>\3|')          
+          summary=$(echo kubeconform_output.txt | grep '^Summary:' | sed -E 's/(Valid: )([0-9]+)/\1<span style="color:green;">\2<\/span>/; s/(Invalid: )([0-9]+)/\1<span style="color:red;">\2<\/span>/; s/(Errors: )([0-9]+)/\1<span style="color:red;">\2<\/span>/; s/(Skipped: )([0-9]+)/\1<span style="color:white;">\2<\/span>/')
           {
             echo "$resources"
             echo "$summary"
