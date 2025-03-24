@@ -25,7 +25,35 @@ jobs:
       - name: Validate rendered manifests with kubeconform
         id: validate
         run: |
-          pipx install ansi2html
-          output=$(docker run --rm -v "${{ github.workspace }}:/workspace" ghcr.io/yannh/kubeconform:latest -summary -verbose -output pretty /workspace/rendered.yaml)
-          formatted_output=$(echo "$output" | ansi2html)
-          echo "$formatted_output" >> $GITHUB_STEP_SUMMARY
+          output=$(docker run --rm -v "${{ github.workspace }}:/workspace" ghcr.io/yannh/kubeconform:latest -summary -output text /workspace/rendered.yaml)
+          echo "$output"
+          echo "$output" >> $GITHUB_STEP_SUMMARY
+
+      - name: Process and generate summary
+        run: |
+          # Process resource lines:
+          # - Select lines starting with '/workspace/rendered.yaml'
+          # - Remove the file prefix and color the resource name (the second word) in green.
+          processed_resources=$(echo "$output" | \
+            grep '^/workspace/rendered.yaml' | \
+            sed -E 's|/workspace/rendered.yaml - ([^[:space:]]+)[[:space:]]+([^[:space:]]+)(.*)|\1 <span style="color:green;">\2</span>\3|')
+          
+          # Add emoji: green check (✅) for lines with "is valid" and red cross (❌) for lines with "failed validation"
+          processed_resources=$(echo "$processed_resources" | \
+            sed -E '/is valid/ s|^|✅ |; /failed validation/ s|^|❌ |')
+          
+          # Process the final summary line:
+          # - Color "Valid" in green, "Invalid" and "Errors" in red, and "Skipped" in white.
+          processed_summary=$(echo "$output" | \
+            grep '^Summary:' | \
+            sed -E \
+            -e 's/(Valid: )([0-9]+)/\1<span style="color:green;">\2<\/span>/' \
+            -e 's/(Invalid: )([0-9]+)/\1<span style="color:red;">\2<\/span>/' \
+            -e 's/(Errors: )([0-9]+)/\1<span style="color:red;">\2<\/span>/' \
+            -e 's/(Skipped: )([0-9]+)/\1<span style="color:white;">\2<\/span>/')
+          
+          # Append the processed resource lines and the summary line to the GitHub step summary file.
+          {
+            echo "$processed_resources"
+            echo "$processed_summary"
+          } >> $GITHUB_STEP_SUMMARY
