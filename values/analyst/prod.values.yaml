@@ -37,10 +37,8 @@ externalSecret:
   enabled: true
   data:
     MYSQL_PASSWORD:
-      remoteRef:
         key: analyst_MYSQL_PASSWORD_prod
     REDIS_PASSWORD:
-      remoteRef:
         key: REDIS_PASSWORD_PROD
 hpa:
   enabled: true
@@ -83,7 +81,6 @@ probes:
       scheme: HTTP
     failureThreshold: 3
     periodSeconds: 30
-    successThreshold: 1
     timeoutSeconds: 3
   readinessProbe:
     httpGet: *scheme
@@ -96,7 +93,6 @@ probes:
     failureThreshold: 3
     initialDelaySeconds: 5
     periodSeconds: 30
-    successThreshold: 1
     timeoutSeconds: 20
 replicaCount: 2
 resources:
@@ -108,8 +104,6 @@ resources:
     memory: 4G
 service:
   enabled: true
-  ports:
-    port: 80
 serviceAccount:
   enabled: true
   annotations:
