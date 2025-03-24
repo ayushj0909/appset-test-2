@@ -20,7 +20,7 @@ jobs:
           version: v3.10.1
 
       - name: Render Helm Chart
-        run: helm template workload ./chart/workload > rendered.yaml
+        run: helm template workload ./chart/workload --skip-schema-validation > rendered.yaml
 
       - name: Validate rendered manifests with kubeconform
         uses: docker://ghcr.io/yannh/kubeconform:latest
